@@ -257,6 +257,25 @@ enyo.kind({
                                 ]
                             }
                         ]
+                    },
+                    {
+                        name: "relatedAppsSection",
+                        showing: false,
+                        layoutKind: "VFlexLayout",
+                        className: "relatedAppsSection",
+                        components: [
+                            {
+                                content: "Related Apps",
+                                className: "descriptionTitle",
+                                style: "margin-top: 16px; margin-bottom: 8px;"
+                            },
+                            {
+                                name: "relatedAppsList",
+                                kind: "HFlexBox",
+                                className: "relatedAppsList",
+                                style: "overflow-x: auto; padding: 8px;"
+                            }
+                        ]
                     }
                 ]
             }]
@@ -495,6 +514,9 @@ enyo.kind({
                 this.$.blacklist.addStyles("text-decoration: line-through;");
             }
 
+            // Display related apps if available
+            this.showRelatedApps(myApp.detail.relatedApps);
+
         }.bind(this);
 
         if (myApp) {
@@ -623,6 +645,55 @@ enyo.kind({
             inSender.addStyles("text-decoration: none;");
         }
         this.doRequestRerenderList();
+    },
+    showRelatedApps: function(relatedApps) {
+        // Clear existing related apps
+        this.$.relatedAppsList.destroyComponents();
+
+        if (!relatedApps || relatedApps.length === 0) {
+            this.$.relatedAppsSection.setShowing(false);
+            return;
+        }
+
+        this.$.relatedAppsSection.setShowing(true);
+        var baseURL = banneret.getPrefs("baseImageURL") + "/";
+        var self = this;
+
+        for (var i = 0; i < relatedApps.length; i++) {
+            var app = relatedApps[i];
+            var iconSrc = app.appIcon || app.appIconBig || "";
+            if (iconSrc && iconSrc.indexOf("://") === -1) {
+                iconSrc = baseURL + iconSrc.toLowerCase();
+            }
+
+            this.$.relatedAppsList.createComponent({
+                kind: "Control",
+                layoutKind: "VFlexLayout",
+                className: "relatedAppItem",
+                style: "width: 80px; text-align: center; margin-right: 8px; cursor: pointer;",
+                appId: app.id,
+                onclick: "handleRelatedAppClick",
+                components: [
+                    {
+                        kind: "Image",
+                        src: iconSrc,
+                        style: "width: 64px; height: 64px; margin: 0 auto;"
+                    },
+                    {
+                        content: banneret.cleanText(app.title),
+                        style: "font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 80px;"
+                    }
+                ]
+            }, {owner: this});
+        }
+
+        this.$.relatedAppsList.render();
+    },
+    handleRelatedAppClick: function(inSender, inEvent) {
+        var appId = inSender.appId;
+        if (appId) {
+            this.setAppId(appId);
+        }
     }
 });
 

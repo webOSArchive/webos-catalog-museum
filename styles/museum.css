@@ -556,3 +556,17 @@ background: -webkit-gradient(linear, left top, left bottom, from(rgba(138,124,22
 .resetAppIcon.resetting {
 	background-position: bottom;
 }
+
+/* Related Apps Section */
+.relatedAppsSection {
+	background-color: rgba(0,0,0,0.1);
+	border-top: 1px solid rgba(0,0,0,0.2);
+	padding-bottom: 16px;
+}
+.relatedAppsList {
+	padding: 8px;
+}
+.relatedAppItem {
+	display: inline-block;
+	vertical-align: top;
+}

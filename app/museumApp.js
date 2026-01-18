@@ -148,6 +148,17 @@ enyo.kind({
 													onChange: "firstLetterSelected"
 												},
 												{
+													kind: "ListSelector",
+													name: "sortSelector",
+													onChange: "sortOrderChanged",
+													className: "appFooterSelectorOnLight",
+													value: "alpha",
+													items: [
+														{caption: $L("A-Z"), value: "alpha"},
+														{caption: $L("Top"), value: "recommended"}
+													]
+												},
+												{
 													kind: "Spacer",
 													flex: 1
 												},
@@ -433,6 +444,14 @@ enyo.kind({
 		this.$.appList.setListOffset(topItemIdx);
 	},
 	deviceFilterChanged : function (inSender, inEvent) {
+		this.handleRandomButton();
+	},
+	sortOrderChanged: function (inSender, inEvent) {
+		// Clear cached data and refresh with new sort order
+		banneret.getMuseumList.museumCalls = {};
+		banneret.setGlobal("appList", []);
+		this.$.appList.setAppList([]);
+		this.$.appList.listOffset = 0;
 		this.handleRandomButton();
 	},
 	handleAppSelected: function (inSender, inEvent) {

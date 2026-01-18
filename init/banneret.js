@@ -333,6 +333,11 @@ banneret.getMuseumList = function(settings, onSuccess, onError) {
     settings.adult = banneret.getPrefs("showAdult");
     settings.museumVersion = enyo.fetchAppInfo().version;
 
+    // Get sort order from selector if available
+    if (enyo.$.museumApp && enyo.$.museumApp.$.sortSelector) {
+        settings.sort = enyo.$.museumApp.$.sortSelector.getValue();
+    }
+
     if (typeof settings.category !== "string") {
         settings.category = banneret.getCategoryLabel(settings.category);
     }

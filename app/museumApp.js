@@ -93,7 +93,8 @@ enyo.kind({
 									name: "categories",
 									kind: "appMuseum.Categories",
 									flex: 1,
-									onCategorySelected: "handleCategorySelected"
+									onCategorySelected: "handleCategorySelected",
+									onSortOrderChanged: "sortOrderChanged"
 								}
 							]
 						},
@@ -146,17 +147,6 @@ enyo.kind({
 													className: "appFooterSelectorOnLight",
 													name: "selectFirstLetter",
 													onChange: "firstLetterSelected"
-												},
-												{
-													kind: "ListSelector",
-													name: "sortSelector",
-													onChange: "sortOrderChanged",
-													className: "appFooterSelectorOnLight",
-													value: "alpha",
-													items: [
-														{caption: $L("A-Z"), value: "alpha"},
-														{caption: $L("Top"), value: "recommended"}
-													]
 												},
 												{
 													kind: "Spacer",
@@ -444,14 +434,25 @@ enyo.kind({
 		this.$.appList.setListOffset(topItemIdx);
 	},
 	deviceFilterChanged : function (inSender, inEvent) {
+		// Clear caches since device filter changes which apps are shown
+		banneret._sessionKey = null;
+		banneret.setGlobal("appList", []);
 		this.handleRandomButton();
 	},
 	sortOrderChanged: function (inSender, inEvent) {
-		// Clear cached data and refresh with new sort order
+		// Clear all caches - indices change when sort order changes
 		banneret.getMuseumList.museumCalls = {};
-		banneret.setGlobal("appList", []);
-		this.$.appList.setAppList([]);
+		banneret.getMuseumList.previousCall = undefined;
+		banneret._sessionKey = null;  // Force new backend session
+		banneret.setGlobal("appList", []);  // Clear global app cache (indexed by position)
+		// Ensure category is a string label, not numeric index
+		var cat = this.$.appList.getCategory();
+		if (typeof cat === "number") {
+			this.$.appList.setCategory(banneret.getCategoryLabel(cat));
+		}
 		this.$.appList.listOffset = 0;
+		this.$.appList._currentPage = null;
+		this.$.appList._forcePunt = true;
 		this.handleRandomButton();
 	},
 	handleAppSelected: function (inSender, inEvent) {
@@ -534,7 +535,7 @@ enyo.kind({
         if (banneret.getPrefs("showRandomApp") || arguments.length > 0) {
         	callObj.appIds = "random";
         } else {
-        	callObj.page = 0;        	
+        	callObj.page = 0;
         }
 
 	    banneret.getMuseumList(
@@ -564,7 +565,6 @@ enyo.kind({
 	            }
 
 	            appListObj.appList = appList;
-        		//appListObj._forcePunt = true;
 	            appListObj.appListUpdated(inData);
 
 	            var selectedFirstLetter = "";
@@ -592,7 +592,6 @@ enyo.kind({
 	            }.bind(this), 300);
 	        }.bind(this),
 	        function (inError) {
-
 	        }.bind(this)
         );
 	},

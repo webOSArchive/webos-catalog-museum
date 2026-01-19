@@ -5,7 +5,8 @@ enyo.kind({
 		categoryCount: {}
 	},
 	events: {
-		onCategorySelected: ""
+		onCategorySelected: "",
+		onSortOrderChanged: ""
 	},
 	kind: "VFlexBox",
 	flex: 1,
@@ -66,7 +67,21 @@ enyo.kind({
 		{
 			kind: "Toolbar",
 			name: "catFooter",
-			className:"enyo-toolbar-light"
+			className:"enyo-toolbar-light",
+			components: [
+				{
+					kind: "ListSelector",
+					name: "sortSelector",
+					onChange: "handleSortChange",
+					className: "appFooterSelectorOnLight",
+					value: "recent",
+					items: [
+						{caption: $L("Recent"), value: "recent"},
+						{caption: $L("A-Z"), value: "alpha"},
+						{caption: $L("Suggested"), value: "recommended"}
+					]
+				}
+			]
 		}
 	],
 	create: function() {
@@ -117,6 +132,12 @@ enyo.kind({
 	},
 	categoryCountChanged: function () {
 		this.refresh();
+	},
+	handleSortChange: function (inSender, inValue) {
+		this.doSortOrderChanged(inValue);
+	},
+	getSortOrder: function () {
+		return this.$.sortSelector.getValue();
 	}
 })
 

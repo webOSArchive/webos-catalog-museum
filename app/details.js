@@ -7,6 +7,7 @@ enyo.kind({
         imageList: [],
     },
     _index: undefined,
+    _relatedAppComponents: [],
     events: {
         onShowMoreByCompany: "",
         onShowImages: "",
@@ -80,7 +81,9 @@ enyo.kind({
                                     {
                                         layoutKind: "HFlexLayout",
                                         components: [
-                                            { kind: "Image", name: "vendorLogo", showing: false, className: "vendorLogo noLogo detailLogo", onclick: "openVendorWebPage" },
+                                            { kind: "Control", name: "vendorLogoContainer", showing: false, className: "vendorLogo noLogo detailLogo", onclick: "openVendorWebPage", components: [
+                                                { kind: "Image", name: "vendorLogo", className: "vendorLogoImg" }
+                                            ] },
                                             { width: "6px" },
                                             { name: "appMaker", className: "appMakerDetail", flex: 1, onclick: "openVendorWebPage" },
                                             { kind: "Image", name: "ratingImage", showing: false, className: "starRatings" },
@@ -291,9 +294,9 @@ enyo.kind({
         }
         if (banneret.getGlobal('isTouchpad')) {
             this.$.ratingImage.setShowing(true);
-            this.$.vendorLogo.setAttribute("onload", "showVendorIcon(this)");
-            this.$.vendorLogo.setAttribute("onerror", "hideVendorIcon(this)");
-            this.$.vendorLogo.setShowing(true);
+            this.$.vendorLogo.setAttribute("onload", "showVendorIcon(this.parentNode)");
+            this.$.vendorLogo.setAttribute("onerror", "hideVendorIcon(this.parentNode)");
+            this.$.vendorLogoContainer.setShowing(true);
         }
         var getRandomApp = function() {
             if (enyo.$.museumApp) {
@@ -333,8 +336,8 @@ enyo.kind({
     },
     showAppDetails: function(myApp) {
         var detailsFound = function() {
-            if (banneret.isTouchpad) {
-                hideVendorIcon(this.$.vendorLogo.hasNode());
+            if (banneret.getGlobal("isTouchpad")) {
+                hideVendorIcon(this.$.vendorLogoContainer.hasNode());
                 this.$.vendorLogo.setSrc("");
             }
 
@@ -375,7 +378,7 @@ enyo.kind({
             }
             this.$.appName.setContent(banneret.cleanText(myApp.title));
             this.$.appMaker.setContent(banneret.cleanText(myApp.author));
-            this.$.vendorLogo.setAttribute("vendorletter", myApp.author[0]);
+            this.$.vendorLogoContainer.setAttribute("vendorletter", myApp.author[0]);
             if (!myApp.vendorId || myApp.vendorId == "")
                 this.$.vendorLogo.setSrc(banneret.getPrefs("detailLocation") + "/getVendorIcon.php?url=" + (myApp.detail.homeURL || myApp.detail.supportURL));
             else
@@ -647,8 +650,13 @@ enyo.kind({
         this.doRequestRerenderList();
     },
     showRelatedApps: function(relatedApps) {
-        // Clear existing related apps
-        this.$.relatedAppsList.destroyComponents();
+        // Clear existing related apps by destroying tracked components
+        for (var j = 0; j < this._relatedAppComponents.length; j++) {
+            if (this._relatedAppComponents[j] && !this._relatedAppComponents[j].destroyed) {
+                this._relatedAppComponents[j].destroy();
+            }
+        }
+        this._relatedAppComponents = [];
 
         if (!relatedApps || relatedApps.length === 0) {
             this.$.relatedAppsSection.setShowing(false);
@@ -666,7 +674,7 @@ enyo.kind({
                 iconSrc = baseURL + iconSrc.toLowerCase();
             }
 
-            this.$.relatedAppsList.createComponent({
+            var component = this.$.relatedAppsList.createComponent({
                 kind: "Control",
                 layoutKind: "VFlexLayout",
                 className: "relatedAppItem",
@@ -685,6 +693,7 @@ enyo.kind({
                     }
                 ]
             }, {owner: this});
+            this._relatedAppComponents.push(component);
         }
 
         this.$.relatedAppsList.render();

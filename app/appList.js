@@ -132,14 +132,14 @@ enyo.kind({
         }
         if (this.category === "Favourites") {
             this.setAppList(inData.data);
-            this.refresh(true); 
+            this.refresh(true);
         }
         var receivedPage = Math.floor(inData.return_indices[0]/this.$.appList.pageSize)
         if (this._currentPage === null ||
             this._currentPage === receivedPage ||
             Math.abs(this._currentPage-receivedPage) > 1 ||
             receivedPage === Math.floor(this.listLength/inData.request.count)) {
-            
+
             this.refresh(false);    // we don't want to punt here!
         }
     },

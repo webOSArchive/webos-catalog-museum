@@ -272,6 +272,9 @@ enyo.kind({
 		if (banneret.getPrefs('firstUse') !== false) {
 			this.$.aboutPopup.openAtCenter();
 		}
+		// Hide alphabet picker by default (only shown for A-Z sort)
+		var sortOrder = this.$.categories.getSortOrder();
+		this.$.selectFirstLetter.setShowing(sortOrder === "alpha");
 	},
 	setPeekWidth: function () {
 		var peekA, peekB;
@@ -453,6 +456,8 @@ enyo.kind({
 		this.$.appList.listOffset = 0;
 		this.$.appList._currentPage = null;
 		this.$.appList._forcePunt = true;
+		// Show alphabet picker only for A-Z sort order
+		this.$.selectFirstLetter.setShowing(inEvent === "alpha");
 		this.handleRandomButton();
 	},
 	handleAppSelected: function (inSender, inEvent) {
@@ -567,15 +572,15 @@ enyo.kind({
 	            appListObj.appList = appList;
 	            appListObj.appListUpdated(inData);
 
-	            var selectedFirstLetter = "";
-	            var firstLetter = Object.keys(inData['first_position']);
-	            	firstLetter.some(function(letter, idx, arr) {
-	            		if (inData['first_position'][letter] < inData.return_indices[0]) {
-							selectedFirstLetter = letter;
-	            		} else {
-							return true;
-	            		}
-	            	});
+	            var firstLetterKeys = Object.keys(inData['first_position']);
+	            var selectedFirstLetter = firstLetterKeys[0] || "";
+	            firstLetterKeys.some(function(letter, idx, arr) {
+	            	if (inData['first_position'][letter] <= inData.return_indices[0]) {
+						selectedFirstLetter = letter;
+	            	} else {
+						return true;
+	            	}
+	            });
                 if (firstLetterSelector.value !== selectedFirstLetter) {
                     firstLetterSelector.setValue(selectedFirstLetter);
                 }

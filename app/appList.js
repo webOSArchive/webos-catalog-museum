@@ -213,7 +213,11 @@ enyo.kind({
                     // we need to make sure that items beyond our listCount are excluded
                     appList.length = inData.appCount[this.getCategory()] || inData.extraData.listCount;
 
-                    enyo.$.museumApp.$.selectFirstLetter.setItems(Object.keys(inData['first_position']));
+                    var firstLetterKeys = Object.keys(inData['first_position']);
+                    enyo.$.museumApp.$.selectFirstLetter.setItems(firstLetterKeys);
+                    if (firstLetterKeys.length > 0 && !enyo.$.museumApp.$.selectFirstLetter.getValue()) {
+                        enyo.$.museumApp.$.selectFirstLetter.setValue(firstLetterKeys[0]);
+                    }
                     enyo.$.museumApp._positions = inData['first_position']
                     this.appList = appList;
                     this.appListUpdated(inData);

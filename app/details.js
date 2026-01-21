@@ -159,6 +159,25 @@ enyo.kind({
                         style: "margin-bottom: 16px;"
                     },
                     {
+                        name: "relatedAppsSection",
+                        showing: false,
+                        layoutKind: "VFlexLayout",
+                        className: "relatedAppsSection",
+                        components: [
+                            {
+                                content: "Related Apps",
+                                className: "descriptionTitle",
+                                style: "margin-top: 16px; margin-bottom: 8px;"
+                            },
+                            {
+                                name: "relatedAppsList",
+                                kind: "HFlexBox",
+                                className: "relatedAppsList",
+                                style: "overflow-x: auto; padding: 8px;"
+                            }
+                        ]
+                    },
+                    {
                         kind: "Spacer",
                         flex: 1
                     },
@@ -258,25 +277,6 @@ enyo.kind({
                                         name: "services"
                                     }
                                 ]
-                            }
-                        ]
-                    },
-                    {
-                        name: "relatedAppsSection",
-                        showing: false,
-                        layoutKind: "VFlexLayout",
-                        className: "relatedAppsSection",
-                        components: [
-                            {
-                                content: "Related Apps",
-                                className: "descriptionTitle",
-                                style: "margin-top: 16px; margin-bottom: 8px;"
-                            },
-                            {
-                                name: "relatedAppsList",
-                                kind: "HFlexBox",
-                                className: "relatedAppsList",
-                                style: "overflow-x: auto; padding: 8px;"
                             }
                         ]
                     }

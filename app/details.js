@@ -60,6 +60,7 @@ enyo.kind({
             style: "position: relative;"
         },
         {
+            name: "scroller",
             kind: "Scroller",
             flex: 1,
             autoHorizontal: false,
@@ -701,6 +702,7 @@ enyo.kind({
     handleRelatedAppClick: function(inSender, inEvent) {
         var appId = inSender.appId;
         if (appId) {
+            this.$.scroller.scrollTo(0, 0);
             this.setAppId(appId);
         }
     }

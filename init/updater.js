@@ -67,7 +67,12 @@ enyo.kind({
     InstallViaPreware: function(app) {
         if (!app)
             app = this.LastUpdateResponse.downloadURI;
-        this.$.installRequest.call({ id: "org.webosinternals.preware", params: { type: "install", file: app } });
+        // Whichever app installs .ipk files (init/ipkhandler.js), not only the original Preware.
+        if (window.IpkHandler) {
+            IpkHandler.open(app);
+        } else {
+            this.$.installRequest.call({ id: "org.webosinternals.preware", params: { type: "install", file: app } });
+        }
     },
     //#endregion
 

@@ -1,7 +1,7 @@
 {
     "id": "com.palm.app-museum2",
-    "version": "2.9.8",
-    "versionNote": "LuneOS fixes and enhancements",
+    "version": "2.9.9",
+    "versionNote": "Installs through whichever app handles .ipk files: Preware 2, Preware or Lunacy",
     "lastModifiedTime": "2020-12-04T13:04:48-04:00",
     "vendor": "webOS Archive",
     "type": "web",

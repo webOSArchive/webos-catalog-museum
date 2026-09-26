@@ -602,15 +602,15 @@ enyo.kind({
             var app = myApp.detail.filename;
         }
         
-        //Do the right kind of download for environment
+        //Do the right kind of download for environment: on webOS, LuneOS or Lunacy the package
+        //  goes to whichever app installs .ipk files (init/ipkhandler.js); in a browser it downloads.
         enyo.log("Window location is " + JSON.stringify(window.location));
 
-        if (window.location.hostname && window.location.hostname.indexOf(".media.cryptofs.apps") != -1) {   // Running on webOS
-            this.$.serviceRequest.call({ id: "org.webosinternals.preware", params: { type: "install", file: app } });
-            this.$.countDownloadRequest.setUrl(banneret.getPrefs("detailLocation") + "/countAppDownload.php?appid=" + myApp.id + "&source=webos");
-        } else if(window.location.protocol === "file:" && window.location.pathname.indexOf("/media/cryptofs") != -1) { // Running on LuneOS
-            this.$.serviceRequest.call({ id: "org.webosports.app.preware", params: { type: "install", file: app } });
-            this.$.countDownloadRequest.setUrl(banneret.getPrefs("detailLocation") + "/countAppDownload.php?appid=" + myApp.id + "&source=luneos");
+        if (window.PalmSystem && window.PalmServiceBridge) {
+            IpkHandler.open(app, null, function (r) {
+                enyo.error("No app could install the package: " + JSON.stringify(r));
+            });
+            this.$.countDownloadRequest.setUrl(banneret.getPrefs("detailLocation") + "/countAppDownload.php?appid=" + myApp.id + "&source=" + (IpkHandler.isLegacyWebOS ? "webos" : "luneos"));
         } else {    // Running in a web browser
             window.open(app);
             this.$.countDownloadRequest.setUrl(banneret.getPrefs("detailLocation") + "/countAppDownload.php?appid=" + myApp.id);

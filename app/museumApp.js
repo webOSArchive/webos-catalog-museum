@@ -237,7 +237,33 @@ enyo.kind({
 		},
 		{
 			kind: "SpinnerLarge", name: "screenshotSpinner", showing: false, className: "screenshotSpinner"
-		}
+		},
+		{
+            kind: "Popup",
+            name: "deprecatePopup",
+            lazy: false,
+            layoutKind: "VFlexLayout",
+            style: "width: 80%;min-height:288px",
+            components: [
+                { content: "<b>Deprecated</b>" },
+                {
+                    kind: "BasicScroller",
+                    flex: 1,
+                    components: [
+                        { name: "deprecateMessage", kind: "HtmlContent", flex: 1, pack: "center", align: "left", style: "text-align: left;padding-top:10px;padding-bottom: 10px", 
+							content: "The App Museum II has been deprecated in favor of the restored App Catalog, it is available only for dev/test purposes and is not maintained.<br>Please visit www.webosarchive.org to obtain the latest App Catalog app for your device."
+						}
+                    ]
+                },
+                {
+                    layoutKind: "HFlexLayout",
+                    pack: "center",
+                    components: [
+                        { kind: "Button", caption: "OK", onclick: "deprecateClose" }
+                    ]
+                }
+            ]
+        },
 	],
 
 
@@ -248,9 +274,6 @@ enyo.kind({
 		//       (defunct) App Catalog
 
 		this.inherited(arguments);
-
-		this.$.SelfUpdater.CheckForUpdate(this, "app museum 2", this.updateResponseCallBack);
-
 		document.addEventListener("keydown", this.showSearchBar);
 
 		this.setPeekWidth();
@@ -287,8 +310,12 @@ enyo.kind({
 	handleOpenMenu: function () {
 		this.$.appMenu.open();
 	},
+	deprecateClose: function() {
+        this.$.deprecatePopup.close();
+    },
 	GetConfigSuccessFn: function (inSender, inData, inResponse) {
 		enyo.log("Got config response");
+		this.$.deprecatePopup.openAtCenter();
 		if (inData) {
 			enyo.log("Using config response");
 			if (inData.package_host) {
